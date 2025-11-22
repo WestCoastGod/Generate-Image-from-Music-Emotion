@@ -246,8 +246,8 @@ def generate_emotion_image(v, a, model_path, save_path=r"C:\Users\cxoox\Desktop\
     
     # Start from random noise
     x = torch.randn(1, 3, 128, 128, device=device)
-    v_tensor = torch.tensor([v_norm], device=device)
-    a_tensor = torch.tensor([a_norm], device=device)
+    v_tensor = torch.tensor([v_norm], dtype=torch.float32, device=device)
+    a_tensor = torch.tensor([a_norm], dtype=torch.float32, device=device)
     
     print(f"Generating image with V={v:.1f}/9 (norm={v_norm:.2f}), A={a:.1f}/9 (norm={a_norm:.2f}), guidance={guidance_scale}...")
     

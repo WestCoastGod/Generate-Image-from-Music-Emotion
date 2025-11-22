@@ -74,12 +74,28 @@ pip install torch torchvision librosa scikit-learn numpy matplotlib tqdm joblib
 
 ### Quick Start: Generate Image from Music
 
-```python
-# Run the main pipeline (to be implemented)
+```bash
+# Generate landscape from music file (end-to-end pipeline)
 python main.py --audio path/to/music.mp3 --output generated_image.png
+
+# Example with project dataset
+python main.py --audio "Data/Music/DEAM/audios/4.mp3" --output my_landscape.png
+
+# With custom guidance scale (3-7 typical, higher = stronger emotion effect)
+python main.py --audio music.mp3 --guidance 6.0 --output result.png
 ```
 
 ### Generate Image from Known VA Values
+
+```bash
+# Generate directly from valence and arousal values
+python main.py --valence 8.0 --arousal 7.5 --output happy_energetic.png
+
+# With reproducible seed
+python main.py --valence 5.0 --arousal 5.0 --seed 42 --output neutral.png
+```
+
+### Advanced: Use Python API Directly
 
 ```python
 from Image_Generation.Diffusion.generate import generate_emotion_image
@@ -95,24 +111,22 @@ generate_emotion_image(
 )
 ```
 
-### Predict Music Emotions
+### Command Line Options
 
-```python
-import joblib
-import librosa
-import numpy as np
+```bash
+python main.py --help
 
-# Load trained model
-model = joblib.load("Weights/Music/music_model_optimized.joblib")
-
-# Extract audio features (example - adapt from training notebook)
-y, sr = librosa.load("path/to/music.mp3")
-features = extract_audio_features(y, sr)  # Implement feature extraction
-
-# Predict valence and arousal
-valence, arousal = model.predict([features])[0]
-print(f"Valence: {valence:.2f}, Arousal: {arousal:.2f}")
+Options:
+  --audio, -a         Path to audio file for emotion analysis
+  --valence, -v       Valence value (1-9, where 1=sad, 9=happy)
+  --arousal, -ar      Arousal value (1-9, where 1=calm, 9=energetic)
+  --output, -o        Output image path (default: generated_landscape.png)
+  --model, -m         Path to diffusion model checkpoint
+  --guidance, -g      Guidance scale (3-7 typical, default: 5.0)
+  --seed, -s          Random seed for reproducibility (optional)
 ```
+
+**Note:** Each generation is random by default (seed=None), so running the same command multiple times will produce different images with the same emotional characteristics.
 
 ## Model Details
 

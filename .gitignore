@@ -10,14 +10,13 @@ build/
 *.egg
 
 # Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb_checkpoints/
+.ipynb_checkpoints/
 
 # Virtual Environment
 venv/
 env/
 ENV/
-.venv
+.venv/
 
 # IDE
 .vscode/
@@ -26,36 +25,12 @@ ENV/
 *.swo
 *~
 
-# Model Weights (large files)
-*.pth
-*.pt
-*.ckpt
-*.h5
-*.joblib
+# Model Weights
 Weights/
 
-# Generated Images and Samples
-*.png
-*.jpg
-*.jpeg
-!README_images/*.png
-!README_images/*.jpg
-Demo/GAN_Samples/
-Demo/Diffusion_Samples/
-
-# Dataset (large image/audio files)
-Data/Image/All_photos/
-Data/Image/Landscape/
-Data/Image/FindingEmo/
-Data/Music/DEAM/audios/
-Data/Music/PMEmo/chorus/
-
-# CSV and TXT data files
-*.csv
-*.txt
-
-# Web folder (entire frontend/backend)
-Web/
+# Data and Demo folders
+Data/
+Demo/
 
 # Logs and temporary files
 *.log
@@ -63,9 +38,4 @@ Web/
 *.temp
 .DS_Store
 Thumbs.db
-
-# Large binary files
-*.wav
-*.mp3
-*.mp4
-*.avi
+__pycache__

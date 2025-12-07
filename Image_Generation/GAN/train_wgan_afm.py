@@ -119,9 +119,9 @@ def train_progressive_gan(
     
     # Progressive training schedule
     resolutions = [4, 8, 16, 32, 64, 128]
-    stabilization_epochs_4x4 = 50
-    stabilization_epochs = 100
-    fade_in_epochs = 10
+    stabilization_epochs_4x4 = 1
+    stabilization_epochs = 1
+    fade_in_epochs = 1
     
     print("="*60)
     print("PROGRESSIVE GAN - PAPER + SOTA")
@@ -177,8 +177,8 @@ def train_progressive_gan(
     print(f"Arousal: min={all_a.min():.3f}, max={all_a.max():.3f}, mean={all_a.mean():.3f}")
     print("="*60 + "\n")
     
-    os.makedirs("GAN/Samples_WGAN_AFM", exist_ok=True)
-    os.makedirs("GAN/Weights", exist_ok=True)
+    os.makedirs(r"C:\Users\cxoox\Desktop\GAN_Bad_Results\Samples", exist_ok=True)
+    os.makedirs(r"C:\Users\cxoox\Desktop\GAN_Bad_Results\Weights", exist_ok=True)
     
     global_epoch = 0
     loss_history = {
@@ -258,15 +258,15 @@ def train_progressive_gan(
             
             # Save checkpoint at end of stage
             if stab_epoch == stage_stab_epochs - 1:
-                torch.save(generator.state_dict(), f"GAN/Weights/wgan_afm_gen_stage{stage_idx}.pth")
-                torch.save(discriminator.state_dict(), f"GAN/Weights/wgan_afm_dis_stage{stage_idx}.pth")
+                torch.save(generator.state_dict(), rf"C:\Users\cxoox\Desktop\GAN_Bad_Results\Weights\wgan_afm_gen_stage{stage_idx}.pth")
+                torch.save(discriminator.state_dict(), rf"C:\Users\cxoox\Desktop\GAN_Bad_Results\Weights\wgan_afm_dis_stage{stage_idx}.pth")
                 print(f"✓ Saved checkpoint for stage {stage_idx}")
                 
                 plot_loss_curves(loss_history, stage_idx, resolution)
             
             # Save latest (overwriting)
-            torch.save(generator.state_dict(), "GAN/Weights/wgan_afm_gen_latest.pth")
-            torch.save(discriminator.state_dict(), "GAN/Weights/wgan_afm_dis_latest.pth")
+            torch.save(generator.state_dict(), r"C:\Users\cxoox\Desktop\GAN_Bad_Results\Weights\wgan_afm_gen_latest.pth")
+            torch.save(discriminator.state_dict(), r"C:\Users\cxoox\Desktop\GAN_Bad_Results\Weights\wgan_afm_dis_latest.pth")
     
     plot_loss_curves(loss_history, 'final', 'all')
     
@@ -437,7 +437,7 @@ def save_sample_grid(ema_generator, latent_dim, device, epoch, resolution):
     temp_gen.eval()
     
     with torch.no_grad():
-        save_dir = "GAN/Samples_WGAN_AFM"
+        save_dir = r"C:\Users\cxoox\Desktop\GAN_Bad_Results\Samples"
         fig, axes = plt.subplots(3, 3, figsize=(12, 12))
         fig.suptitle(f"Epoch {epoch} - {resolution}×{resolution} WGAN+AFM", fontsize=16)
         
@@ -517,7 +517,7 @@ def plot_loss_curves(loss_history, stage_idx, resolution):
     axes[1, 1].legend()
     
     plt.tight_layout()
-    plt.savefig(f"GAN/Samples_WGAN_AFM/loss_curves_stage{stage_idx}.png", dpi=150, bbox_inches='tight')
+    plt.savefig(rf"C:\Users\cxoox\Desktop\GAN_Bad_Results\Samples\loss_curves_stage{stage_idx}.png", dpi=150, bbox_inches='tight')
     plt.close()
     print(f"✓ Saved loss curves to loss_curves_stage{stage_idx}.png")
 
@@ -527,8 +527,8 @@ if __name__ == "__main__":
     print(f"Using device: {device}")
     
     train_progressive_gan(
-        data_root=r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\GAN\Data\Landscape",
-        va_file=r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\GAN\Data\EmotionLabel\all_photos_valence_arousal.csv",
+        data_root=r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\Data\Image\Landscape",
+        va_file=r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\Data\Image\EmotionLabel\all_photos_valence_arousal.csv",
         batch_size=16,
         latent_dim=128,
         lr_g=0.0005,

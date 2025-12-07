@@ -241,13 +241,13 @@ def analyze_dataset(img_dir, label_csv):
     
     # 8. Display sample resized images
     print(f"\n8. SAMPLE RESIZED IMAGES")
-    print(f"   Generating grid of 12 sample images (original vs resized)...")
+    print(f"   Generating grid of 4 sample images (original vs resized)...")
     
-    # Select 12 random images
+    # Select 4 random images
     import random
-    sample_indices = random.sample(range(len(existing_images)), min(12, len(existing_images)))
+    sample_indices = random.sample(range(len(existing_images)), min(4, len(existing_images)))
     
-    fig2 = plt.figure(figsize=(20, 10))
+    fig2 = plt.figure(figsize=(16, 6))
     fig2.suptitle('Sample Images: Original (top) vs Resized 128×128 (bottom)', fontsize=16, y=0.98)
     
     for idx, sample_idx in enumerate(sample_indices):
@@ -262,13 +262,13 @@ def analyze_dataset(img_dir, label_csv):
         img_resized = img_original.resize((128, 128), Image.BILINEAR)
         
         # Plot original
-        ax_orig = plt.subplot(4, 6, idx + 1)
+        ax_orig = plt.subplot(2, 4, idx + 1)
         ax_orig.imshow(img_original)
         ax_orig.set_title(f'{img_original.size[0]}×{img_original.size[1]}', fontsize=9)
         ax_orig.axis('off')
         
         # Plot resized
-        ax_resize = plt.subplot(4, 6, idx + 13)
+        ax_resize = plt.subplot(2, 4, idx + 5)
         ax_resize.imshow(img_resized)
         ax_resize.set_title(f'V={v:.1f}, A={a:.1f}', fontsize=9, color='blue')
         ax_resize.axis('off')
@@ -289,7 +289,7 @@ def analyze_dataset(img_dir, label_csv):
 
 
 if __name__ == "__main__":
-    img_dir = r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\GAN\Data\Landscape"
-    label_csv = r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\GAN\Data\EmotionLabel\all_photos_valence_arousal.csv"
+    img_dir = r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\Data\\Image\\All_photos"
+    label_csv = r"C:\Users\cxoox\Desktop\AIST4010_Project\AIST4010_Project\Data\\Image\\EmotionLabel\all_photos_valence_arousal.csv"
     
     analyze_dataset(img_dir, label_csv)

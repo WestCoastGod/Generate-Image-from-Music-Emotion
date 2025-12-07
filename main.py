@@ -225,7 +225,7 @@ def main():
     )
     
     print(f"\n{'='*60}")
-    print(f"✓ SUCCESS! Generated image saved to: {args.output}")
+    print(f"SUCCESS! Generated image saved to: {args.output}")
     print(f"{'='*60}")
 
 

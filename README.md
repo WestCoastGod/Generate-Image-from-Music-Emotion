@@ -1,287 +1,73 @@
-# Generate Emotional Landscape Images from Music 
+# Generate Images from Music Emotion
 
-> **Status:** Work in Progress
+A two-stage deep learning system that analyzes emotional content in music and generates corresponding images using diffusion models.
 
-A two-stage deep learning system that analyzes emotional content in music and generates corresponding emotional landscape images using diffusion models.
+![progress](Demo\progress.png)
 
-## Overview
-
-This project implements an end-to-end pipeline that:
-1. Analyzes music to extract emotional features (Valence and Arousal values)
-2. Generates landscape images that visually represent the detected emotions
-
-**Valence-Arousal Model:**
-- Valence: Emotional positivity (1=sad, 9=happy)
-- Arousal: Emotional energy (1=calm, 9=energetic)
-
-## System Architecture
-
-### Stage 1: Music Emotion Analysis
-- **Input:** Audio file (MP3, WAV, etc.)
-- **Model:** Random Forest Regressor
-- **Features:** Audio characteristics (MFCCs, spectral features, rhythm patterns)
-- **Output:** Valence and Arousal values (1-9 scale)
-- **Training Data:** DEAM + PMEmo datasets (combined ~3000 songs)
-
-### Stage 2: Emotion-Conditioned Image Generation
-- **Input:** Valence and Arousal values
-- **Model:** Denoising Diffusion Probabilistic Model (DDPM) with UNet architecture
-- **Conditioning:** VA values integrated through adaptive normalization and self-attention
-- **Output:** 128x128 RGB landscape image
-- **Training Data:** FindingEmo dataset (10,766 images) + CGnA10766 emotion annotations
-
-## Working Models
-
-**IMPORTANT: The following models are fully functional and production-ready:**
-
-1. **Music Emotion Predictor**
-   - Location: `Weights/Music/music_model_optimized.joblib`
-   - Model: Random Forest with optimized hyperparameters
-   - Training: DEAM + PMEmo combined dataset
-
-2. **Diffusion Image Generator**
-   - Location: `Weights/Diffusion/diffusion_epoch1650.pth` (recommended)
-   - Architecture: Emotion-Conditioned UNet with self-attention
-   - Training: 1650 epochs, batch size 16 (local training)
-   - Performance: Best VA conditioning quality
-
-**Note:** GAN-based models in `Image_Generation/GAN/` are experimental prototypes (WGAN, VAE, Progressive GAN, StyleGAN) and are not recommended for production use. The diffusion model demonstrates superior stability and emotion control.
-
-## Requirements
+![diffusion](Demo\demo.png)
+## Quick Start
 
 ```bash
-Python 3.8+
-torch>=2.0.0
-torchvision
-librosa>=0.10.0
-scikit-learn
-numpy
-matplotlib
-tqdm
-joblib
-```
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/WestCoastGod/Generate-Emotional-Landscape-Image-from-Music.git
-cd Generate-Emotional-Landscape-Image-from-Music
-
 # Install dependencies
 pip install torch torchvision librosa scikit-learn numpy matplotlib tqdm joblib
+
+# Generate landscape from music file
+python main.py --audio path/to/music.mp3 --output generated_image.png
+
+# Generate from valence/arousal values directly
+python main.py --valence 8.0 --arousal 7.5 --output happy_energetic.png
 ```
+
+## Pre-trained Weights
+
+Download and place in `Weights/` folder:
+
+| Model | Download Link |
+|-------|---------------|
+| Diffusion Model | [diffusion_epoch1650.pth](https://huggingface.co/spaces/WestCoastGod/photo-web-backend/resolve/main/music_to_image/models/diffusion_epoch1650.pth) |
+| Music Emotion Model | [music_model_optimized.joblib](https://huggingface.co/spaces/WestCoastGod/photo-web-backend/resolve/main/music_to_image/models/music_model_optimized.joblib) |
+
+## Datasets
+
+| Dataset | Description | Link |
+|---------|-------------|------|
+| CGnA10766 | Image emotion annotations (Valence-Arousal) | [Figshare](https://figshare.com/articles/dataset/CGnA10766_Dataset/5383105) |
+| DEAM | Music emotion dataset (2058 songs) | [CVML UNIGE](https://cvml.unige.ch/databases/DEAM/) |
+| PMEmo | Music emotion dataset (794 songs) | [GitHub](https://github.com/HuiZhangDB/PMEmo?tab=readme-ov-file) |
 
 ## Usage
 
-### Quick Start: Generate Image from Music
-
-```bash
-# Generate landscape from music file (end-to-end pipeline)
-python main.py --audio path/to/music.mp3 --output generated_image.png
-
-# Example with project dataset
-python main.py --audio "Data/Music/DEAM/audios/4.mp3" --output my_landscape.png
-
-# With custom guidance scale (3-7 typical, higher = stronger emotion effect)
-python main.py --audio music.mp3 --guidance 6.0 --output result.png
-```
-
-### Generate Image from Known VA Values
-
-```bash
-# Generate directly from valence and arousal values
-python main.py --valence 8.0 --arousal 7.5 --output happy_energetic.png
-
-# With reproducible seed
-python main.py --valence 5.0 --arousal 5.0 --seed 42 --output neutral.png
-```
-
-### Advanced: Use Python API Directly
-
-```python
-from Image_Generation.Diffusion.generate import generate_emotion_image
-
-# Generate a happy, energetic landscape (V=8.0, A=7.5)
-generate_emotion_image(
-    v=8.0,  # Valence: 1-9 scale
-    a=7.5,  # Arousal: 1-9 scale
-    model_path="Weights/Diffusion/diffusion_epoch1650.pth",
-    save_path="output/happy_energetic_landscape.png",
-    guidance_scale=5.0,  # Higher = stronger emotion effect
-    seed=None  # Random generation (or set seed for reproducibility)
-)
-```
-
-### Command Line Options
+### Command Line
 
 ```bash
 python main.py --help
 
 Options:
   --audio, -a         Path to audio file for emotion analysis
-  --valence, -v       Valence value (1-9, where 1=sad, 9=happy)
-  --arousal, -ar      Arousal value (1-9, where 1=calm, 9=energetic)
-  --output, -o        Output image path (default: generated_landscape.png)
-  --model, -m         Path to diffusion model checkpoint
-  --guidance, -g      Guidance scale (3-7 typical, default: 5.0)
-  --seed, -s          Random seed for reproducibility (optional)
+  --valence, -v       Valence value (1-9, 1=sad, 9=happy)
+  --arousal, -ar      Arousal value (1-9, 1=calm, 9=energetic)
+  --output, -o        Output image path
+  --guidance, -g      Guidance scale (default: 5.0)
+  --seed, -s          Random seed for reproducibility
 ```
 
-**Note:** Each generation is random by default (seed=None), so running the same command multiple times will produce different images with the same emotional characteristics.
+### Python API
 
-## Model Details
+```python
+from Image_Generation.Diffusion.generate import generate_emotion_image
 
-### Music Emotion Analysis
-- **Dataset:** DEAM (2058 songs) + PMEmo (794 songs)
-- **Features:** 
-  - MFCCs (Mel-frequency cepstral coefficients)
-  - Spectral features (centroid, rolloff, contrast)
-  - Rhythm features (tempo, beat strength)
-  - Zero-crossing rate, chroma features
-- **Model:** Random Forest Regressor (optimized hyperparameters)
-- **Performance:** See `Music_Emotion_Analysis/feature_importance.svg` for feature analysis
-
-### Diffusion Image Generator
-- **Architecture:** UNet with:
-  - 5 encoder/decoder stages (64 → 128 → 256 → 512 → 1024 channels)
-  - Self-attention at 16x16 resolution (2 layers)
-  - VA conditioning via adaptive normalization (scale 0.3)
-  - Classifier-free guidance for stronger emotion control
-- **Training:**
-  - Dataset: FindingEmo (10,766 landscape images) + CGnA10766 VA labels
-  - Loss: MSE (denoising) + 0.1 * LPIPS (perceptual quality)
-  - Epochs: 1650 (local model), batch size 16
-  - Timesteps: 1000 (DDPM schedule)
-- **Generation:** ~30 seconds per image (1000 denoising steps)
-- **Guidance Scale:** 5.0 recommended (range 3-7)
-
-### Datasets Used
-
-1. **FindingEmo Dataset**
-   - 10,766 landscape/nature photographs
-   - Source: Emotional image dataset for computer vision research
-
-2. **CGnA10766 Emotion Annotations**
-   - Valence-Arousal labels for FindingEmo images
-   - Human-annotated emotional ratings
-
-3. **DEAM (Database for Emotional Analysis of Music)**
-   - 2058 songs with continuous VA annotations
-   - Multi-rater validated emotional labels
-
-4. **PMEmo Dataset**
-   - 794 popular music tracks
-   - Detailed emotion annotations
-
-## Project Structure
-
-```
-Generate-Emotional-Landscape-Image-from-Music/
-├── main.py                          # Main entry script
-├── README.md
-├── .gitignore
-│
-├── Data/                            # All datasets
-│   ├── Image/
-│   │   ├── All_photos/              # Full image dataset
-│   │   ├── Landscape/               # Landscape subset
-│   │   ├── FindingEmo/              # FindingEmo dataset
-│   │   ├── EmotionLabel/            # CGnA10766 VA annotations 
-│   │   ├── analyze_dataset.py
-│   │   └── dataset_*.png
-│   └── Music/
-│       ├── DEAM/                     # DEAM dataset
-│       ├── PMEmo/                    # PMEmo dataset
-│       └── EmotionLabel/
-│           └── music_train_dataset.csv
-│
-├── Music_Emotion_Analysis/           # Music VA prediction
-│   ├── music_data_clean_and_train.ipynb
-│   ├── feature_importance.svg
-│   └── predicted_vs_true_values.svg
-│
-├── Image_Generation/                 # Image generation models
-│   ├── GAN/                          # Legacy GAN experiments (not recommended)
-│   │   ├── Models/
-│   │   ├── Utils/
-│   │   └── train_*.py
-│   └── Diffusion/                    # Working diffusion model
-│       ├── Utils/
-│       │   └── dataloader.py         # Emotion dataset loader
-│       ├── train_diffusion.py        # Local training (batch 16) - BEST
-│       ├── train_diffusion_48gb.py   # Cloud training (batch 128)
-│       └── generate.py               # Image generation script
-│
-├── Weights/                          # Trained model checkpoints
-│   ├── Diffusion/
-│   │   └── diffusion_epoch1650.pth   # RECOMMENDED MODEL
-│   ├── Music/
-│   │   └── music_model_optimized.joblib
-│   └── Backup/
-│
-└── Demo/                             # Sample outputs and documentation
-    ├── GAN_Samples/
-    ├── Diffusion_Samples/
-    └── Others/
-        ├── LOG.md
-        ├── milestone_report.md
-        └── PROJECT_HISTORY.md
+generate_emotion_image(
+    v=8.0,  # Valence: 1-9 scale
+    a=7.5,  # Arousal: 1-9 scale
+    model_path="Weights/Diffusion/diffusion_epoch1650.pth",
+    save_path="output/landscape.png",
+    guidance_scale=5.0
+)
 ```
 
-## Training (Advanced)
+## Requirements
 
-### Retrain Music Model
-See `Music_Emotion_Analysis/music_data_clean_and_train.ipynb` for the complete training pipeline.
-
-### Retrain Diffusion Model
-
-```bash
-# Local training (recommended settings)
-cd Image_Generation/Diffusion
-python train_diffusion.py
-```
-
-**Training parameters:**
-- Epochs: 1500-2000 recommended
-- Batch size: 16 (for consumer GPUs)
-- Learning rate: 0.0001
-- Timesteps: 1000
-- Hardware: NVIDIA GPU with 8GB+ VRAM
-
-**Cloud training (48GB VRAM):**
-- Batch size: 128 may cause mode collapse
-- Requires 3000+ epochs to match local model performance
-- Not recommended unless training time is critical
-
-## Troubleshooting
-
-### Generation produces grey/dark images
-- Ensure using `diffusion_epoch1650.pth` or later checkpoint
-- Try different `guidance_scale` values (3.0-7.0)
-- Verify VA values are in correct range (1-9, not 0-1)
-
-### Slow generation speed
-- Reduce timesteps to 500 (faster, slightly lower quality)
-- Use GPU if available
-- Consider batch generation for multiple images
-
-### Music model predictions seem off
-- Verify audio file is properly loaded (correct sample rate)
-- Check feature extraction matches training pipeline
-- Ensure audio is at least 30 seconds long for reliable features
-
-## Performance Notes
-
-- **Generation time:** ~30 seconds per image (GPU), ~5 minutes (CPU)
-- **Model size:** 420 MB (diffusion model), 1 MB (music model)
-- **VRAM usage:** ~3 GB during generation
-- **Training time:** ~12 hours for 1650 epochs (batch 16, single GPU)
-
-## References
-
-- **DDPM Paper:** Denoising Diffusion Probabilistic Models (Ho et al., 2020)
-- **FindingEmo Dataset:** 10,766 landscape photographs for emotion research
-- **CGnA10766 Annotations:** Valence-Arousal labels for FindingEmo images
-- **DEAM Dataset:** Database for emotional analysis of music (2058 songs)
-- **PMEmo Dataset:** Popular music emotion dataset (794 tracks)
+- Python 3.8+
+- PyTorch >= 2.0.0
+- librosa >= 0.10.0
+- scikit-learn, numpy, matplotlib, tqdm, joblib
